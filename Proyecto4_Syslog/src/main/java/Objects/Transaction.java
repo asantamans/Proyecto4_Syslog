@@ -7,6 +7,7 @@ import com.mysql.jdbc.ResultSetMetaData;
 
 public class Transaction {
 	private String userTransaction;
+	private String databaseUsed;
 	private TransactionType tType;
 	private String queryExecuted;
 	private Date executionDate;
