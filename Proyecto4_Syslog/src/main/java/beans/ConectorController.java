@@ -1,6 +1,8 @@
 package beans;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import Objects.Transaction;
 import Objects.TransactionType;
 import Objects.logFormat;
 
@@ -36,20 +37,12 @@ public class ConectorController implements Serializable {
 	// conexion
 	private String driver = "com.mysql.jdbc.Driver";// Driver
 
-	
-	private Transaction registro;
-	private ArrayList<Transaction> historico = new ArrayList<Transaction>();
-	PropertyChangeSupport evento;
+	private static QueryEvento evt;
+	private PropertyChangeSupport evento;
 
 	public ConectorController() {
-		this.database = "";
-		this.hostname = "";
-		this.port = "";
-		this.username = "root";// Por defecto
-		this.password = "";
-		this.sSQL = "";
-		this.url = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
 		evento = new PropertyChangeSupport(this);
+		evt = new QueryEvento();
 	}
 
 	public ConectorController(String hostname, String port, String database) {
@@ -132,52 +125,54 @@ public class ConectorController implements Serializable {
 
 	private void delete(String query) throws SQLException {
 		// TODO Auto-generated method stub
-		evento.firePropertyChange("DELETE", null, new Transaction());
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		 registro = new Transaction();
-		 registro.setUserTransaction(username);
-		 registro.setDatabaseUsed(database);
-		 registro.settType(TransactionType.DELETE);
-		 registro.setQueryExecuted(query);
-		 registro.setRegistros(registros);
-		 registro.setExecutionDate(date.getTime());
+		Transaction transaction = new Transaction();
+		transaction.setUserTransaction(username);
+		transaction.setDatabaseUsed(database);
+		transaction.settType(TransactionType.DELETE);
+		transaction.setQueryExecuted(query);
+		transaction.setRegistros(registros);
+		transaction.setExecutionDate(date.getTime());
+		evento.firePropertyChange("SELECT", null, transaction);
 
 	}
 
 	private void insertar(String query) throws SQLException {
-		evento.firePropertyChange("INSERT", null, new Transaction());
+
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		 registro = new Transaction();
-		 registro.setUserTransaction(username);
-		 registro.setDatabaseUsed(database);
-		 registro.settType(TransactionType.INSERT);
-		 registro.setQueryExecuted(query);
-		 registro.setRegistros(registros);
-		 registro.setExecutionDate(date.getTime());
+		Transaction transaction = new Transaction();
+		transaction.setUserTransaction(username);
+		transaction.setDatabaseUsed(database);
+		transaction.settType(TransactionType.INSERT);
+		transaction.setQueryExecuted(query);
+		transaction.setRegistros(registros);
+		transaction.setExecutionDate(date.getTime());
+		evento.firePropertyChange("SELECT", null, transaction);
 
 	}
 
 	private void update(String query) throws SQLException {
-		evento.firePropertyChange("UPDATE", null, new Transaction());
+
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		 registro = new Transaction();
-		 registro.setUserTransaction(username);
-		 registro.setDatabaseUsed(database);
-		 registro.settType(TransactionType.UPDATE);
-		 registro.setQueryExecuted(query);
-		 registro.setRegistros(registros);
-		 registro.setExecutionDate(date.getTime());
+		Transaction transaction = new Transaction();
+		transaction.setUserTransaction(username);
+		transaction.setDatabaseUsed(database);
+		transaction.settType(TransactionType.UPDATE);
+		transaction.setQueryExecuted(query);
+		transaction.setRegistros(registros);
+		transaction.setExecutionDate(date.getTime());
+		evento.firePropertyChange("SELECT", null, transaction);
 
 	}
 
 	private void select(String query) throws SQLException {
-		evento.firePropertyChange("SELECT", null, new Transaction());
+
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
@@ -199,14 +194,15 @@ public class ConectorController implements Serializable {
 		}
 		System.out.println("\n\n");
 		Date date = new Date();
-		 registro = new Transaction();
-		 registro.setUserTransaction(username);
-		 registro.setDatabaseUsed(database);
-		 registro.settType(TransactionType.SELECT);
-		 registro.setQueryExecuted(query);
-		 registro.setRegistros(registros);
-		 registro.setExecutionDate(date.getTime());
-		
+		Transaction transaction = new Transaction();
+		transaction.setUserTransaction(username);
+		transaction.setDatabaseUsed(database);
+		transaction.settType(TransactionType.SELECT);
+		transaction.setQueryExecuted(query);
+		transaction.setRegistros(registros);
+		transaction.setExecutionDate(date.getTime());
+		evento.firePropertyChange("SELECT", null, transaction);
+
 	}
 
 	private String eliminarVaciosInicio(String query) {
@@ -278,6 +274,7 @@ public class ConectorController implements Serializable {
 
 	private ArrayList<String> getTransactionsUsers() {
 		ArrayList<String> userList = new ArrayList<String>();
+		ArrayList<Transaction> historico = evt.getHistorico();
 		for (Transaction tmp : historico) {
 			String userName = tmp.getUserTransaction();
 			if (!userList.contains(userName)) {
@@ -323,6 +320,7 @@ public class ConectorController implements Serializable {
 
 	public ArrayList<String> getReport(String database, String user) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		ArrayList<Transaction> historico = evt.getHistorico();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)) {
 				solicitadas.add(tmp);
@@ -337,6 +335,7 @@ public class ConectorController implements Serializable {
 
 	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		ArrayList<Transaction> historico = evt.getHistorico();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)
 					&& tmp.gettType() == tipo) {
@@ -352,6 +351,7 @@ public class ConectorController implements Serializable {
 
 	public ArrayList<String> getReport(String database, TransactionType tipo) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		ArrayList<Transaction> historico = evt.getHistorico();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.gettType() == tipo) {
 				solicitadas.add(tmp);
@@ -362,6 +362,13 @@ public class ConectorController implements Serializable {
 		}
 		return null;
 
+	}
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		evento.addPropertyChangeListener(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		evento.removePropertyChangeListener(listener);
 	}
 
 }
