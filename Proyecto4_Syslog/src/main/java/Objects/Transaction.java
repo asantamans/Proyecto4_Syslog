@@ -16,6 +16,9 @@ public class Transaction {
 	//private Date executionDate;
 	private long executionDate;
 
+	public Transaction() {
+		
+	}
 
 	public Transaction(String userTransaction, String databaseUsed, TransactionType tType, String queryExecuted,
 			int registros,long executionDate) {
@@ -51,6 +54,30 @@ public class Transaction {
 
 	public int getRegistros() {
 		return registros;
+	}
+
+	public void setUserTransaction(String userTransaction) {
+		this.userTransaction = userTransaction;
+	}
+
+	public void setDatabaseUsed(String databaseUsed) {
+		this.databaseUsed = databaseUsed;
+	}
+
+	public void settType(TransactionType tType) {
+		this.tType = tType;
+	}
+
+	public void setQueryExecuted(String queryExecuted) {
+		this.queryExecuted = queryExecuted;
+	}
+
+	public void setRegistros(int registros) {
+		this.registros = registros;
+	}
+
+	public void setExecutionDate(long executionDate) {
+		this.executionDate = executionDate;
 	}
 
 

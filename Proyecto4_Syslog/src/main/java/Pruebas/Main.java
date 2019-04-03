@@ -16,66 +16,66 @@ public class Main {
 		boolean end = false;
 		while (!end) {
 			printOptions();
-			Scanner cin = new Scanner(System.in);
-			String opcion = cin.next();
 			try {
-				int num = Integer.parseInt(opcion);
+				Scanner numeroLector = new Scanner(System.in);
+				int num =numeroLector.nextInt();
 				switch (num) {
 				case 1: {
 					String username, password;
 					System.out.print("Nombre de usuario:");
-					username = cin.next();
+					username = leerString();
 					System.out.print("Contrasenya:");
-					password = cin.next();
+					password = leerString();
 					a.setCredentials(username, password);
 					break;
 				}
 				case 2: {
 					String database;
 					System.out.print("Base de datos:");
-					database = cin.next();
+					database = leerString();
 					a.setDatabase(database);
 					break;
 				}
 				case 3: {
 					String hostname, port;
 					System.out.print("Introduce Host:");
-					hostname = cin.next();
+					hostname = leerString();
 					System.out.print("Puerto:");
-					port = cin.next();
+					port = leerString();
 					a.setHostSettings(hostname, port);
 					break;
 				}
 				case 4: {
 					String query;
 					System.out.print("Introduce su sentencia SQL:");
-					cin = new Scanner(System.in);
-					query = cin.nextLine();
+					
+					query = leerString();
 					a.ejecutarQuery(query);
 					break;
 				}
 				case 5: {
 					printLogOptions();
-					int reportNum = Integer.parseInt(cin.next());
+					int reportNum = Integer.parseInt(leerString());
 					String database, user, type;
 					ArrayList<String> reporte = new ArrayList<String>();
 					switch (reportNum) {
 
 					case 1: {
 						System.out.print("Introduce base de datos:");
-						database = cin.next();
+						database =leerString();
 						System.out.print("Introduce usuario:");
-						user = cin.next();
+						user = leerString();
 						reporte = a.getReport(database, user);
+						System.out.println(reporte.size());
 						break;
 					}
 					case 2: {
 						System.out.print("Introduce base de datos:");
-						database = cin.next();
+						database = leerString();
 						System.out.print("Introduce usuario:");
-						user = cin.next();
+						user = leerString();
 						System.out.print("Introduce tipo de query");
-						type = cin.next();
+						type = leerString();
 						if (type.equalsIgnoreCase("INSERT")) {
 							reporte = a.getReport(database, user, TransactionType.INSERT);
 						} else if (type.equalsIgnoreCase("DELETE")) {
@@ -92,9 +92,9 @@ public class Main {
 					}
 					case 3: {
 						System.out.print("Introduce base de datos:");
-						database = cin.next();
+						database = leerString();
 						System.out.print("Introduce tipo de query");
-						type = cin.next();
+						type = leerString();
 						if (type.equalsIgnoreCase("INSERT")) {
 							reporte = a.getReport(database, TransactionType.INSERT);
 						} else if (type.equalsIgnoreCase("DELETE")) {
@@ -109,6 +109,7 @@ public class Main {
 					
 					}
 					}
+					System.out.println(reporte.size());
 					if (reporte.size()> 0) {
 						System.out.println("Mostrando reporte solicitado");
 						for (String tmp : reporte) {
@@ -121,8 +122,7 @@ public class Main {
 				}
 				}
 			} catch (Exception e) {
-				cin.close();
-				cin = new Scanner(System.in);
+				
 			}
 		}
 	}
@@ -144,6 +144,17 @@ public class Main {
 		System.out.println("2:BBDD,usuario y tipo query");
 		System.out.println("3:BBDD y tipo query");
 		System.out.print("Introduce una opcion:");
+	}
+	private static String leerString() {
+		Scanner cin = new Scanner(System.in);
+		
+		return cin.nextLine();
+	}
+	private static int leerInt() {
+		Scanner cin = new Scanner(System.in);
+		int retorno = cin.nextInt();
+		cin.close();
+		return retorno;
 	}
 
 }

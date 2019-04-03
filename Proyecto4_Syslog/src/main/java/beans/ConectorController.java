@@ -1,5 +1,6 @@
 package beans;
 
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,13 +8,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import Objects.QueryHandler;
 import Objects.Transaction;
 import Objects.TransactionType;
-import beans.LogController.logFormat;
+import Objects.logFormat;
 
 public class ConectorController implements Serializable {
 	private Connection conn;
@@ -30,11 +32,14 @@ public class ConectorController implements Serializable {
 	private String password;
 	// Sentencia sql
 	private String sSQL;
-
-	private QueryHandler logController;
 	private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useSSL=false";// Ruta de la
-																									// conexion
+	// conexion
 	private String driver = "com.mysql.jdbc.Driver";// Driver
+
+	
+	private Transaction registro;
+	private ArrayList<Transaction> historico = new ArrayList<Transaction>();
+	PropertyChangeSupport evento;
 
 	public ConectorController() {
 		this.database = "";
@@ -44,7 +49,7 @@ public class ConectorController implements Serializable {
 		this.password = "";
 		this.sSQL = "";
 		this.url = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
-		logController = new LogController();
+		evento = new PropertyChangeSupport(this);
 	}
 
 	public ConectorController(String hostname, String port, String database) {
@@ -55,7 +60,7 @@ public class ConectorController implements Serializable {
 		this.password = "";
 		this.sSQL = "";
 		this.url = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
-		logController = new LogController();
+		evento = new PropertyChangeSupport(this);
 	}
 
 	public void setCredentials(String username, String password) {
@@ -127,40 +132,53 @@ public class ConectorController implements Serializable {
 
 	private void delete(String query) throws SQLException {
 		// TODO Auto-generated method stub
-		System.out.println("Ejecutado Delete");
-
+		evento.firePropertyChange("DELETE", null, new Transaction());
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query, registros,
-				date.getTime());
-		logController.queryLanzada(nueva);
+		 registro = new Transaction();
+		 registro.setUserTransaction(username);
+		 registro.setDatabaseUsed(database);
+		 registro.settType(TransactionType.DELETE);
+		 registro.setQueryExecuted(query);
+		 registro.setRegistros(registros);
+		 registro.setExecutionDate(date.getTime());
+
 	}
 
 	private void insertar(String query) throws SQLException {
-		System.out.println("Ejecutado insert");
-
+		evento.firePropertyChange("INSERT", null, new Transaction());
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, registros,
-				date.getTime());
-		logController.queryLanzada(nueva);
+		 registro = new Transaction();
+		 registro.setUserTransaction(username);
+		 registro.setDatabaseUsed(database);
+		 registro.settType(TransactionType.INSERT);
+		 registro.setQueryExecuted(query);
+		 registro.setRegistros(registros);
+		 registro.setExecutionDate(date.getTime());
+
 	}
 
 	private void update(String query) throws SQLException {
-		System.out.println("Ejecutado update");
+		evento.firePropertyChange("UPDATE", null, new Transaction());
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.UPDATE, query, registros,
-				date.getTime());
-		logController.queryLanzada(nueva);
+		 registro = new Transaction();
+		 registro.setUserTransaction(username);
+		 registro.setDatabaseUsed(database);
+		 registro.settType(TransactionType.UPDATE);
+		 registro.setQueryExecuted(query);
+		 registro.setRegistros(registros);
+		 registro.setExecutionDate(date.getTime());
+
 	}
 
 	private void select(String query) throws SQLException {
+		evento.firePropertyChange("SELECT", null, new Transaction());
 		Statement stmt = conn.createStatement();
-
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnsNumber = rsmd.getColumnCount();
@@ -181,21 +199,14 @@ public class ConectorController implements Serializable {
 		}
 		System.out.println("\n\n");
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.SELECT, query, registros,
-				date.getTime());
-		logController.queryLanzada(nueva);
-	}
-
-	public ArrayList<String> getReport(String database, String user) {
-		return logController.reportSolicitado(database, user);
-	}
-
-	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
-		return logController.reportSolicitado(database, user, tipo);
-	}
-
-	public ArrayList<String> getReport(String database, TransactionType tipo) {
-		return logController.reportSolicitado(database, tipo);
+		 registro = new Transaction();
+		 registro.setUserTransaction(username);
+		 registro.setDatabaseUsed(database);
+		 registro.settType(TransactionType.SELECT);
+		 registro.setQueryExecuted(query);
+		 registro.setRegistros(registros);
+		 registro.setExecutionDate(date.getTime());
+		
 	}
 
 	private String eliminarVaciosInicio(String query) {
@@ -237,14 +248,6 @@ public class ConectorController implements Serializable {
 		this.sSQL = sSQL;
 	}
 
-	public QueryHandler getLogController() {
-		return logController;
-	}
-
-	public void setLogController(LogController logController) {
-		this.logController = logController;
-	}
-
 	public String getUrl() {
 		return url;
 	}
@@ -271,6 +274,94 @@ public class ConectorController implements Serializable {
 
 	public String getPassword() {
 		return password;
+	}
+
+	private ArrayList<String> getTransactionsUsers() {
+		ArrayList<String> userList = new ArrayList<String>();
+		for (Transaction tmp : historico) {
+			String userName = tmp.getUserTransaction();
+			if (!userList.contains(userName)) {
+				userList.add(userName);
+			}
+		}
+		return userList;
+	}
+
+	private ArrayList<String> getExecutedQueriesList(logFormat format, ArrayList<Transaction> solicitadas) {
+		ArrayList<String> queryList = new ArrayList<String>();
+		switch (format) {
+		case QUERY_TYPE:
+			for (Transaction tmp : solicitadas) {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date(tmp.getExecutionDate());
+				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + ";"
+						+ tmp.gettType().toString() + "]";
+				queryList.add(intermedio);
+			}
+			break;
+		case USER_LIST:
+			for (Transaction tmp : solicitadas) {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date(tmp.getExecutionDate());
+				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + "]";
+				queryList.add(intermedio);
+			}
+			break;
+		case SIMPLE:
+			for (Transaction tmp : solicitadas) {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date(tmp.getExecutionDate());
+				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + ";"
+						+ tmp.getUserTransaction() + "]";
+				queryList.add(intermedio);
+			}
+			break;
+		}
+
+		return queryList;
+	}
+
+	public ArrayList<String> getReport(String database, String user) {
+		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		for (Transaction tmp : historico) {
+			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)) {
+				solicitadas.add(tmp);
+			}
+		}
+		if (solicitadas.size() > 0) {
+			return getExecutedQueriesList(logFormat.QUERY_TYPE, solicitadas);
+		}
+		return null;
+
+	}
+
+	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
+		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		for (Transaction tmp : historico) {
+			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)
+					&& tmp.gettType() == tipo) {
+				solicitadas.add(tmp);
+			}
+		}
+		if (solicitadas.size() > 0) {
+			return getExecutedQueriesList(logFormat.USER_LIST, solicitadas);
+		}
+		return null;
+
+	}
+
+	public ArrayList<String> getReport(String database, TransactionType tipo) {
+		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
+		for (Transaction tmp : historico) {
+			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.gettType() == tipo) {
+				solicitadas.add(tmp);
+			}
+		}
+		if (solicitadas.size() > 0) {
+			return getExecutedQueriesList(logFormat.SIMPLE, solicitadas);
+		}
+		return null;
+
 	}
 
 }
