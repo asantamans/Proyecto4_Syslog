@@ -3,8 +3,8 @@ package Pruebas;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import Components.ConectorController;
 import Objects.TransactionType;
+import beans.ConectorController;
 
 public class Main {
 	public static void main(String[] args) {
