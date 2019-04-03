@@ -197,4 +197,74 @@ public class ConectorController implements Serializable{
 		return query;
 	}
 
+	public Connection getConn() {
+		return conn;
+	}
+
+	public void setConn(Connection conn) {
+		this.conn = conn;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getsSQL() {
+		return sSQL;
+	}
+
+	public void setsSQL(String sSQL) {
+		this.sSQL = sSQL;
+	}
+
+	public LogController getLogController() {
+		return logController;
+	}
+
+	public void setLogController(LogController logController) {
+		this.logController = logController;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+	
+
+	
 }
