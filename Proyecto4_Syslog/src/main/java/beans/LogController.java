@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import Objects.QueryHandler;
 import Objects.Transaction;
 import Objects.TransactionType;
 
-public class LogController {
+public class LogController implements QueryHandler{
 	private ArrayList<Transaction> historico;
 
 	enum logFormat {
@@ -20,11 +21,11 @@ public class LogController {
 		historico = new ArrayList<Transaction>();
 	}
 
-	public void addTransaction(Transaction a) {
+	private void addTransaction(Transaction a) {
 		historico.add(a);
 	}
 
-	public ArrayList<String> getTransactionsUsers() {
+	private ArrayList<String> getTransactionsUsers() {
 		ArrayList<String> userList = new ArrayList<String>();
 		for (Transaction tmp : historico) {
 			String userName = tmp.getUserTransaction();
@@ -69,7 +70,7 @@ public class LogController {
 
 		return queryList;
 	}
-	public ArrayList<String> getReport(String database,String user) {
+	private ArrayList<String> getReport(String database,String user) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)) {
@@ -82,7 +83,7 @@ public class LogController {
 		return null;
 		
 	}
-	public ArrayList<String> getReport(String database,String user,TransactionType tipo) {
+	private ArrayList<String> getReport(String database,String user,TransactionType tipo) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user) && tmp.gettType() == tipo) {
@@ -95,7 +96,7 @@ public class LogController {
 		return null;
 		
 	}
-	public ArrayList<String> getReport(String database,TransactionType tipo) {
+	private ArrayList<String> getReport(String database,TransactionType tipo) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.gettType() == tipo) {
@@ -107,5 +108,27 @@ public class LogController {
 		}
 		return null;
 		
+	}
+
+	
+
+	public void queryLanzada(Transaction transaction) {
+		// TODO Auto-generated method stub
+		historico.add(transaction);
+		
+	}
+	public ArrayList<String> reportSolicitado(String database, TransactionType tipo) {
+		// TODO Auto-generated method stub
+		return reportSolicitado(database,tipo);
+	}
+
+	public ArrayList<String> reportSolicitado(String database, String user, TransactionType tipo) {
+		// TODO Auto-generated method stub
+		return getReport( database,  tipo);
+	}
+
+	public ArrayList<String> reportSolicitado(String database, String user) {
+		// TODO Auto-generated method stub
+		return getReport( database,  user);
 	}
 }

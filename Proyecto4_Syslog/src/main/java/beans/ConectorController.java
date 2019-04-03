@@ -10,11 +10,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
+import Objects.QueryHandler;
 import Objects.Transaction;
 import Objects.TransactionType;
 import beans.LogController.logFormat;
 
-public class ConectorController implements Serializable{
+public class ConectorController implements Serializable {
 	private Connection conn;
 
 	// Nom bbdd
@@ -30,7 +31,7 @@ public class ConectorController implements Serializable{
 	// Sentencia sql
 	private String sSQL;
 
-	private LogController logController;
+	private QueryHandler logController;
 	private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useSSL=false";// Ruta de la
 																									// conexion
 	private String driver = "com.mysql.jdbc.Driver";// Driver
@@ -61,9 +62,11 @@ public class ConectorController implements Serializable{
 		this.username = username;
 		this.password = password;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -129,8 +132,9 @@ public class ConectorController implements Serializable{
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
-		logController.addTransaction(nueva);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query, registros,
+				date.getTime());
+		logController.queryLanzada(nueva);
 	}
 
 	private void insertar(String query) throws SQLException {
@@ -139,8 +143,9 @@ public class ConectorController implements Serializable{
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
-		logController.addTransaction(nueva);
+		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, registros,
+				date.getTime());
+		logController.queryLanzada(nueva);
 	}
 
 	private void update(String query) throws SQLException {
@@ -148,8 +153,9 @@ public class ConectorController implements Serializable{
 		Statement stmt = conn.createStatement();
 		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
-		logController.addTransaction(nueva);
+		Transaction nueva = new Transaction(username, database, TransactionType.UPDATE, query, registros,
+				date.getTime());
+		logController.queryLanzada(nueva);
 	}
 
 	private void select(String query) throws SQLException {
@@ -160,6 +166,7 @@ public class ConectorController implements Serializable{
 		int columnsNumber = rsmd.getColumnCount();
 		int registros = 0;
 		while (rs.next()) {
+
 			++registros;
 			for (int i = 1; i <= columnsNumber; i++) {
 				if (i > 1) {
@@ -174,20 +181,21 @@ public class ConectorController implements Serializable{
 		}
 		System.out.println("\n\n");
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
-		logController.addTransaction(nueva);
+		Transaction nueva = new Transaction(username, database, TransactionType.SELECT, query, registros,
+				date.getTime());
+		logController.queryLanzada(nueva);
 	}
 
 	public ArrayList<String> getReport(String database, String user) {
-		return logController.getReport(database,user);
+		return logController.reportSolicitado(database, user);
 	}
 
 	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
-		return logController.getReport(database, user, tipo);
+		return logController.reportSolicitado(database, user, tipo);
 	}
 
 	public ArrayList<String> getReport(String database, TransactionType tipo) {
-		return logController.getReport(database, tipo);
+		return logController.reportSolicitado(database, tipo);
 	}
 
 	private String eliminarVaciosInicio(String query) {
@@ -229,7 +237,7 @@ public class ConectorController implements Serializable{
 		this.sSQL = sSQL;
 	}
 
-	public LogController getLogController() {
+	public QueryHandler getLogController() {
 		return logController;
 	}
 
@@ -264,7 +272,5 @@ public class ConectorController implements Serializable{
 	public String getPassword() {
 		return password;
 	}
-	
 
-	
 }

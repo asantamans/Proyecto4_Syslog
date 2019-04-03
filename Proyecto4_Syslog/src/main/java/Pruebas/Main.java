@@ -1,5 +1,6 @@
 package Pruebas;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,17 +8,16 @@ import Objects.TransactionType;
 import beans.ConectorController;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		ConectorController a = new ConectorController();
 		a.setDatabase("forhonor");
 		a.setHostSettings("localhost", "3306");
-
+		a.setCredentials("root","");
 		boolean end = false;
 		while (!end) {
 			printOptions();
 			Scanner cin = new Scanner(System.in);
 			String opcion = cin.next();
-			System.out.println("\n\n\n\n");
 			try {
 				int num = Integer.parseInt(opcion);
 				switch (num) {
@@ -49,7 +49,8 @@ public class Main {
 				case 4: {
 					String query;
 					System.out.print("Introduce su sentencia SQL:");
-					query = cin.next();
+					cin = new Scanner(System.in);
+					query = cin.nextLine();
 					a.ejecutarQuery(query);
 					break;
 				}
@@ -105,7 +106,7 @@ public class Main {
 						} else {
 							System.out.println("No se reconoce el tipo de query insertado");
 						}
-						break;
+					
 					}
 					}
 					if (reporte.size()> 0) {
@@ -116,6 +117,7 @@ public class Main {
 					}else {
 						System.out.println("No se han encontrado registros de los datos solicitados");
 					}
+					break;
 				}
 				}
 			} catch (Exception e) {
