@@ -12,21 +12,21 @@ public class Transaction {
 	private String databaseUsed;
 	private TransactionType tType;
 	private String queryExecuted;
+	private int registros;
 	//private Date executionDate;
 	private long executionDate;
-	private ResultSet resultQuery;
-	private ResultSetMetaData metadataQuery;
+
 
 	public Transaction(String userTransaction, String databaseUsed, TransactionType tType, String queryExecuted,
-			long executionDate, ResultSet resultQuery, ResultSetMetaData metadataQuery) {
-		super();
+			int registros,long executionDate) {
+	
 		this.userTransaction = userTransaction;
 		this.databaseUsed = databaseUsed;
 		this.tType = tType;
 		this.queryExecuted = queryExecuted;
+		this.registros = registros;
 		this.executionDate = executionDate;
-		this.resultQuery = resultQuery;
-		this.metadataQuery = metadataQuery;
+	
 	}
 
 	public String getUserTransaction() {
@@ -49,11 +49,10 @@ public class Transaction {
 		return executionDate;
 	}
 
-	public ResultSet getResultQuery() {
-		return resultQuery;
+	public int getRegistros() {
+		return registros;
 	}
 
-	public ResultSetMetaData getMetadataQuery() {
-		return metadataQuery;
-	}
+
+
 }

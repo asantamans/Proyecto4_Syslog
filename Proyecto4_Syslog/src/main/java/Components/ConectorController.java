@@ -60,6 +60,12 @@ public class ConectorController {
 		this.username = username;
 		this.password = password;
 	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public void setDatabase(String database) {
 		this.database = database;
@@ -120,13 +126,9 @@ public class ConectorController {
 		System.out.println("Ejecutado Delete");
 
 		Statement stmt = conn.createStatement();
-
-		ResultSet rs = stmt.executeQuery(query);
-		ResultSetMetaData rsmd = rs.getMetaData();
-
+		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query, date.getTime(), rs,
-				rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
 		logController.addTransaction(nueva);
 	}
 
@@ -134,26 +136,18 @@ public class ConectorController {
 		System.out.println("Ejecutado insert");
 
 		Statement stmt = conn.createStatement();
-
-		ResultSet rs = stmt.executeQuery(query);
-		ResultSetMetaData rsmd = rs.getMetaData();
-
+		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, date.getTime(), rs,
-				rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
 		logController.addTransaction(nueva);
 	}
 
 	private void update(String query) throws SQLException {
 		System.out.println("Ejecutado update");
 		Statement stmt = conn.createStatement();
-
-		ResultSet rs = stmt.executeQuery(query);
-		ResultSetMetaData rsmd = rs.getMetaData();
-
+		int registros = stmt.executeUpdate(query);
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.UPDATE, query, date.getTime(), rs,
-				rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
 		logController.addTransaction(nueva);
 	}
 
@@ -163,7 +157,9 @@ public class ConectorController {
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnsNumber = rsmd.getColumnCount();
+		int registros = 0;
 		while (rs.next()) {
+			++registros;
 			for (int i = 1; i <= columnsNumber; i++) {
 				if (i > 1) {
 					String columnValue = rs.getString(i);
@@ -177,27 +173,20 @@ public class ConectorController {
 		}
 		System.out.println("\n\n");
 		Date date = new Date();
-		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, date.getTime(), rs,
-				rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query,registros, date.getTime());
 		logController.addTransaction(nueva);
 	}
 
 	public ArrayList<String> getReport(String database, String user) {
-		
 		return logController.getReport(database,user);
-
 	}
 
 	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
-
 		return logController.getReport(database, user, tipo);
-
 	}
 
 	public ArrayList<String> getReport(String database, TransactionType tipo) {
-	
 		return logController.getReport(database, tipo);
-
 	}
 
 	private String eliminarVaciosInicio(String query) {
