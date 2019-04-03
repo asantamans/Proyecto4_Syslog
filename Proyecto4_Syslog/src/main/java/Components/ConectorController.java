@@ -6,6 +6,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
+
+import Objects.Transaction;
+import Objects.TransactionType;
 
 public class ConectorController {
 	private Connection conn;
@@ -83,7 +87,7 @@ public class ConectorController {
 		}
 	}
 
-	public void ejecutarQuery(String query) {
+	public void ejecutarQuery(String query) throws SQLException {
 		iniciarConexion();
 		this.sSQL = query;
 		String tipo = "";
@@ -104,20 +108,50 @@ public class ConectorController {
 			}
 		} catch (Exception e) {
 
+		}finally {
+			cerrarConexion();
 		}
 	}
 
-	private void delete(String query) {
+	private void delete(String query) throws SQLException {
 		// TODO Auto-generated method stub
 		System.out.println("Ejecutado Delete");
-	}
-
-	private void insertar(String query) {
-		System.out.println("Ejecutado insert");
-	}
-
-	private void update(String query) {
+		
 		System.out.println("Ejecutado update");
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs = stmt.executeQuery(query);
+		ResultSetMetaData rsmd = rs.getMetaData();
+		
+		Date date = new Date();
+		Transaction nueva = new Transaction(username,database,TransactionType.DELETE,query,date.getTime(),rs,rsmd);
+		logController.addTransaction(nueva);
+	}
+
+	private void insertar(String query) throws SQLException {
+		System.out.println("Ejecutado insert");
+		
+		System.out.println("Ejecutado update");
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs = stmt.executeQuery(query);
+		ResultSetMetaData rsmd = rs.getMetaData();
+		
+		Date date = new Date();
+		Transaction nueva = new Transaction(username,database,TransactionType.INSERT,query,date.getTime(),rs,rsmd);
+		logController.addTransaction(nueva);
+	}
+
+	private void update(String query) throws SQLException {
+		System.out.println("Ejecutado update");
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs = stmt.executeQuery(query);
+		ResultSetMetaData rsmd = rs.getMetaData();
+		
+		Date date = new Date();
+		Transaction nueva = new Transaction(username,database,TransactionType.UPDATE,query,date.getTime(),rs,rsmd);
+		logController.addTransaction(nueva);
 	}
 
 	private void select(String query) throws SQLException {
@@ -140,6 +174,9 @@ public class ConectorController {
 			System.out.println("");
 		}
 		System.out.println("\n\n");
+		Date date = new Date();
+		Transaction nueva = new Transaction(username,database,TransactionType.INSERT,query,date.getTime(),rs,rsmd);
+		logController.addTransaction(nueva);
 	}
 
 	private String eliminarVaciosInicio(String query) {
