@@ -35,7 +35,7 @@ public class LogController {
 		return userList;
 	}
 
-	public ArrayList<String> getExecutedQueriesList(logFormat format,ArrayList<Transaction> solicitadas) {
+	private ArrayList<String> getExecutedQueriesList(logFormat format,ArrayList<Transaction> solicitadas) {
 		ArrayList<String> queryList = new ArrayList<String>();
 		switch (format) {
 		case QUERY_TYPE:

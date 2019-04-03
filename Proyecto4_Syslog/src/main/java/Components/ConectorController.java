@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 
+import Components.LogController.logFormat;
 import Objects.Transaction;
 import Objects.TransactionType;
 
@@ -108,7 +110,7 @@ public class ConectorController {
 			}
 		} catch (Exception e) {
 
-		}finally {
+		} finally {
 			cerrarConexion();
 		}
 	}
@@ -116,29 +118,31 @@ public class ConectorController {
 	private void delete(String query) throws SQLException {
 		// TODO Auto-generated method stub
 		System.out.println("Ejecutado Delete");
-		
+
 		System.out.println("Ejecutado update");
 		Statement stmt = conn.createStatement();
 
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
-		
+
 		Date date = new Date();
-		Transaction nueva = new Transaction(username,database,TransactionType.DELETE,query,date.getTime(),rs,rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.DELETE, query, date.getTime(), rs,
+				rsmd);
 		logController.addTransaction(nueva);
 	}
 
 	private void insertar(String query) throws SQLException {
 		System.out.println("Ejecutado insert");
-		
+
 		System.out.println("Ejecutado update");
 		Statement stmt = conn.createStatement();
 
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
-		
+
 		Date date = new Date();
-		Transaction nueva = new Transaction(username,database,TransactionType.INSERT,query,date.getTime(),rs,rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, date.getTime(), rs,
+				rsmd);
 		logController.addTransaction(nueva);
 	}
 
@@ -148,9 +152,10 @@ public class ConectorController {
 
 		ResultSet rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData();
-		
+
 		Date date = new Date();
-		Transaction nueva = new Transaction(username,database,TransactionType.UPDATE,query,date.getTime(),rs,rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.UPDATE, query, date.getTime(), rs,
+				rsmd);
 		logController.addTransaction(nueva);
 	}
 
@@ -163,20 +168,38 @@ public class ConectorController {
 		while (rs.next()) {
 			for (int i = 1; i <= columnsNumber; i++) {
 				if (i > 1) {
-				String columnValue = rs.getString(i);
-				System.out.print(columnValue+ " ");
-				}
-				else {
 					String columnValue = rs.getString(i);
-					System.out.print(columnValue+ " ");
+					System.out.print(columnValue + " ");
+				} else {
+					String columnValue = rs.getString(i);
+					System.out.print(columnValue + " ");
 				}
 			}
 			System.out.println("");
 		}
 		System.out.println("\n\n");
 		Date date = new Date();
-		Transaction nueva = new Transaction(username,database,TransactionType.INSERT,query,date.getTime(),rs,rsmd);
+		Transaction nueva = new Transaction(username, database, TransactionType.INSERT, query, date.getTime(), rs,
+				rsmd);
 		logController.addTransaction(nueva);
+	}
+
+	public ArrayList<String> getReport(String database, String user) {
+		
+		return logController.getReport(database,user);
+
+	}
+
+	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
+
+		return logController.getReport(database, user, tipo);
+
+	}
+
+	public ArrayList<String> getReport(String database, TransactionType tipo) {
+	
+		return logController.getReport(database, tipo);
+
 	}
 
 	private String eliminarVaciosInicio(String query) {
