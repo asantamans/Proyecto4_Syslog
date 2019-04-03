@@ -7,7 +7,7 @@ public class Main {
 		ConectorController a = new ConectorController();
 		a.setDatabase("forhonor");
 		a.setHostSettings("localhost","3306");
-		a.ejecutarQuery("SELECT faccion_id from faccion");
+		//a.ejecutarQuery("SELECT faccion_id from faccion");
 		
 	}
 }
