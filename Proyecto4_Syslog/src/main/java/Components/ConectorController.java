@@ -119,7 +119,6 @@ public class ConectorController {
 		// TODO Auto-generated method stub
 		System.out.println("Ejecutado Delete");
 
-		System.out.println("Ejecutado update");
 		Statement stmt = conn.createStatement();
 
 		ResultSet rs = stmt.executeQuery(query);
@@ -134,7 +133,6 @@ public class ConectorController {
 	private void insertar(String query) throws SQLException {
 		System.out.println("Ejecutado insert");
 
-		System.out.println("Ejecutado update");
 		Statement stmt = conn.createStatement();
 
 		ResultSet rs = stmt.executeQuery(query);
