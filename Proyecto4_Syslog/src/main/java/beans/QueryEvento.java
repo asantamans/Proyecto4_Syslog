@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 public class QueryEvento implements PropertyChangeListener {
 
-	ArrayList<Transaction> historico;
+	private ArrayList<Transaction> historico;
+	
 	
 	public void propertyChange(PropertyChangeEvent evt) {
 		// TODO Auto-generated method stub

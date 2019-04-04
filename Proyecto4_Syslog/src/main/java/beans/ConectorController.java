@@ -352,11 +352,13 @@ public class ConectorController implements Serializable {
 	public ArrayList<String> getReport(String database, TransactionType tipo) {
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
 		ArrayList<Transaction> historico = evt.getHistorico();
+		/*
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.gettType() == tipo) {
 				solicitadas.add(tmp);
 			}
 		}
+		*/
 		if (solicitadas.size() > 0) {
 			return getExecutedQueriesList(logFormat.SIMPLE, solicitadas);
 		}
@@ -365,6 +367,7 @@ public class ConectorController implements Serializable {
 	}
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		evento.addPropertyChangeListener(listener);
+		
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
