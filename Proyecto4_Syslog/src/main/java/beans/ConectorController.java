@@ -319,8 +319,11 @@ public class ConectorController implements Serializable {
 	}
 
 	public ArrayList<String> getReport(String database, String user) {
+		PropertyChangeListener[] temporal = evento.getPropertyChangeListeners();
+		QueryEvento transicion = (QueryEvento) temporal[0];
+		
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
-		ArrayList<Transaction> historico = evt.getHistorico();
+		ArrayList<Transaction> historico = transicion.getHistorico();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)) {
 				solicitadas.add(tmp);
@@ -334,8 +337,11 @@ public class ConectorController implements Serializable {
 	}
 
 	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
+		PropertyChangeListener[] temporal = evento.getPropertyChangeListeners();
+		QueryEvento transicion = (QueryEvento) temporal[0];
+		
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
-		ArrayList<Transaction> historico = evt.getHistorico();
+		ArrayList<Transaction> historico = transicion.getHistorico();
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.getUserTransaction().equalsIgnoreCase(user)
 					&& tmp.gettType() == tipo) {
@@ -350,24 +356,30 @@ public class ConectorController implements Serializable {
 	}
 
 	public ArrayList<String> getReport(String database, TransactionType tipo) {
+		/*Recuperamos la lista de eventos del listener, al tener solo 1, esta en la posicion 0
+		 * y asi le sacamos el arraylist de transiciones
+		 */
+		PropertyChangeListener[] temporal = evento.getPropertyChangeListeners();
+		QueryEvento transicion = (QueryEvento) temporal[0];
+		
 		ArrayList<Transaction> solicitadas = new ArrayList<Transaction>();
-		ArrayList<Transaction> historico = evt.getHistorico();
-		/*
+		ArrayList<Transaction> historico = transicion.getHistorico();	
 		for (Transaction tmp : historico) {
 			if (tmp.getDatabaseUsed().equalsIgnoreCase(database) && tmp.gettType() == tipo) {
 				solicitadas.add(tmp);
 			}
 		}
-		*/
+
 		if (solicitadas.size() > 0) {
 			return getExecutedQueriesList(logFormat.SIMPLE, solicitadas);
 		}
 		return null;
 
 	}
+
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		evento.addPropertyChangeListener(listener);
-		
+
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {

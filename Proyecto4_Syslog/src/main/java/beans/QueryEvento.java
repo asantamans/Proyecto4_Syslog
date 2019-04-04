@@ -6,14 +6,17 @@ import java.util.ArrayList;
 
 public class QueryEvento implements PropertyChangeListener {
 
-	private ArrayList<Transaction> historico;
+	private ArrayList<Transaction> historico = new ArrayList<Transaction>();
 	
 	
 	public void propertyChange(PropertyChangeEvent evt) {
 		// TODO Auto-generated method stub
-		historico.add((Transaction) evt.getNewValue());
+		Transaction a = (Transaction) evt.getNewValue();
+		historico.add(a);
+		
 	}
 	public ArrayList<Transaction> getHistorico() {
+		System.out.println(historico.size());
 		return historico;
 	}
 
