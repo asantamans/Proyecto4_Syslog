@@ -116,7 +116,8 @@ public class ConectorController implements Serializable {
 					update(query);
 				} else if (tipo.equalsIgnoreCase("SELECT")) {
 					select(query);
-				}else if (tipo.equalsIgnoreCase("CALL")) {
+				}else if (tipo.equalsIgnoreCase("EXECUTE")) {
+					System.out.println("Detectado procedure");
 					procedure(query);
 				}
 			}
@@ -209,18 +210,23 @@ public class ConectorController implements Serializable {
 
 	}
 	private void procedure(String query) throws SQLException {
-		
-		CallableStatement statement = conn.prepareCall(query);  
+	try {
+		CallableStatement statement = conn.prepareCall(query);  	
 		statement.execute(); 
+		System.out.println("\n\n\n Muestra datos:"+username+" "+database+"   "+query);
 		Date date = new Date();
 		Transaction transaction = new Transaction();
 		transaction.setUserTransaction(username);
 		transaction.setDatabaseUsed(database);
+		System.out.println("\n\n\n Muestra datos:"+username+" "+database+"   "+query);
 		transaction.settType(TransactionType.PROCEDURE);
 		transaction.setQueryExecuted(query);
 		transaction.setRegistros(0);
 		transaction.setExecutionDate(date.getTime());
 		evento.firePropertyChange("PROCEDURE", null, transaction);
+	}catch (SQLException e) {
+			System.out.println("SQL Exception");
+		}
 		
 	}
 

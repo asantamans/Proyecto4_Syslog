@@ -24,6 +24,8 @@ public class Pruebas2 {
 		a.ejecutarQuery("Select * from personaje");
 		System.out.println("SELECT * FROM USERS");
 		a.ejecutarQuery("SELECT * from users");
+		System.out.println("EXECUTE test2;");
+		a.ejecutarQuery("EXECUTE test2;");
 
 		a.setCredentials("arnau", "");
 		System.out.println("SELECT * FROM FACCION");
@@ -52,6 +54,10 @@ public class Pruebas2 {
 		System.out.println("\n\n\n\nPrintado de reporte  de bbdd bv i usuario root");
 		reporte = a.getReport("bv", "root");
 		 printReport(reporte);
+		 
+		 System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con query procedure");
+			reporte = a.getReport("forhonor", "root");
+			printReport(reporte);
 
 	}
 
