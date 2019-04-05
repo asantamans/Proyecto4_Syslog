@@ -20,6 +20,11 @@ public enum TransactionType {
 		public String toString() {
 			return "SELECT";
 		}
+	},
+	PROCEDURE {
+		public String toString() {
+			return "PROCEDURE";
+		}
 	}
 	
 }

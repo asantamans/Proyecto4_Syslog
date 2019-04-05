@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -115,6 +116,8 @@ public class ConectorController implements Serializable {
 					update(query);
 				} else if (tipo.equalsIgnoreCase("SELECT")) {
 					select(query);
+				}else if (tipo.equalsIgnoreCase("CALL")) {
+					procedure(query);
 				}
 			}
 		} catch (Exception e) {
@@ -204,6 +207,21 @@ public class ConectorController implements Serializable {
 		transaction.setExecutionDate(date.getTime());
 		evento.firePropertyChange("SELECT", null, transaction);
 
+	}
+	private void procedure(String query) throws SQLException {
+		
+		CallableStatement statement = conn.prepareCall(query);  
+		statement.execute(); 
+		Date date = new Date();
+		Transaction transaction = new Transaction();
+		transaction.setUserTransaction(username);
+		transaction.setDatabaseUsed(database);
+		transaction.settType(TransactionType.PROCEDURE);
+		transaction.setQueryExecuted(query);
+		transaction.setRegistros(0);
+		transaction.setExecutionDate(date.getTime());
+		evento.firePropertyChange("PROCEDURE", null, transaction);
+		
 	}
 
 	private String eliminarVaciosInicio(String query) {
