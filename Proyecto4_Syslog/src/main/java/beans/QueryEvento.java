@@ -18,7 +18,6 @@ public class QueryEvento implements PropertyChangeListener {
 		
 	}
 	public ArrayList<Transaction> getHistorico() {
-		System.out.println(historico.size());
 		return historico;
 	}
 
