@@ -4,9 +4,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import Objects.TransactionType;
 import beans.ConectorController;
 import beans.QueryEvento;
+import objects.TransactionType;
 
 public class Main {
 	public static void main(String[] args) throws SQLException {

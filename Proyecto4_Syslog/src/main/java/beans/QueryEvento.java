@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
+import objects.Transaction;
+
 public class QueryEvento implements PropertyChangeListener {
 
 	private ArrayList<Transaction> historico = new ArrayList<Transaction>();

@@ -1,9 +1,6 @@
-package beans;
+package objects;
 
 import java.util.Date;
-
-import Objects.TransactionType;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

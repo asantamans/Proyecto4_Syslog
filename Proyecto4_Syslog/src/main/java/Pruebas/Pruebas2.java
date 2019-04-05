@@ -4,10 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import Objects.TransactionType;
 import beans.ConectorController;
 import beans.QueryEvento;
-import beans.Transaction;
+import objects.Transaction;
+import objects.TransactionType;
 
 public class Pruebas2 {
 
