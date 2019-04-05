@@ -102,6 +102,9 @@ public class ConectorController implements Serializable {
 	public void ejecutarQuery(String query) throws SQLException {
 		iniciarConexion();
 		this.sSQL = query;
+		// Limpiamos el formato de la query introducida en caso que contenga espacios no
+		// deseados al inicio de esta para asi poder saber que tipo de sentencia se
+		// trata i como proceder
 		String tipo = "";
 		query = eliminarVaciosInicio(query);
 		String[] partes = query.split(" ");
@@ -128,7 +131,7 @@ public class ConectorController implements Serializable {
 	}
 
 	private void delete(String query) throws SQLException {
-		// TODO Auto-generated method stub
+		// Funcion para transaciones de tipo delete
 		int registros = 0;
 		try {
 			Statement stmt = conn.createStatement();
@@ -136,6 +139,8 @@ public class ConectorController implements Serializable {
 		} catch (SQLException e) {
 
 		} finally {
+			// Una vez lanzada la query, recogemos todos los datos que nos interesa de esta
+			// i lanzamos el evento esperando a que el listener lo escuche
 			Date date = new Date();
 			Transaction transaction = new Transaction();
 			transaction.setUserTransaction(username);
@@ -150,6 +155,10 @@ public class ConectorController implements Serializable {
 	}
 
 	private void insertar(String query) {
+		/*
+		 * Funcion para transaciones sql de tipo insert
+		 * 
+		 */
 		int registros = 0;
 		try {
 			Statement stmt = conn.createStatement();
@@ -170,6 +179,10 @@ public class ConectorController implements Serializable {
 	}
 
 	private void update(String query) {
+		/*
+		 * Funcion para transaciones sql de tipo update
+		 * 
+		 */
 		int registros = 0;
 		try {
 			Statement stmt = conn.createStatement();
@@ -190,6 +203,10 @@ public class ConectorController implements Serializable {
 	}
 
 	private void select(String query) {
+		/*
+		 * Funcion para transaciones sql de tipo select registros = numero de filas
+		 * devueltas
+		 */
 		int registros = 0;
 		try {
 			Statement stmt = conn.createStatement();
@@ -229,6 +246,10 @@ public class ConectorController implements Serializable {
 	}
 
 	private void procedure(String query) throws SQLException {
+		/*
+		 * Funcion para ejecucion de procedures
+		 * 
+		 */
 		try {
 			CallableStatement statement = conn.prepareCall(query);
 			statement.execute();
@@ -248,6 +269,10 @@ public class ConectorController implements Serializable {
 	}
 
 	private String eliminarVaciosInicio(String query) {
+		/*
+		 * Funcion transitoria para eliminar posibles vacios delante del tipo de
+		 * sentencia SQL, ej: "   SELECT" => "SELECT"
+		 */
 		while (query.charAt(0) == ' ') {
 			query = query.substring(1, query.length());
 		}
@@ -315,6 +340,8 @@ public class ConectorController implements Serializable {
 	}
 
 	private ArrayList<String> getTransactionsUsers() {
+		// Devuelve un listado de todos los usuarios que han hecho una transacion sqlq
+		// de cualquier tipo
 		ArrayList<String> userList = new ArrayList<String>();
 		ArrayList<Transaction> historico = evt.getHistorico();
 		for (Transaction tmp : historico) {
@@ -327,24 +354,27 @@ public class ConectorController implements Serializable {
 	}
 
 	private ArrayList<String> getExecutedQueriesList(logFormat format, ArrayList<Transaction> solicitadas) {
+		/*
+		 * Funcion que parsea una lista de queries ejecutadas en formato String para ser
+		 * impreso por pantalla o devuelto como valor
+		 */
 		ArrayList<String> queryList = new ArrayList<String>();
 		switch (format) {
 		case QUERY_TYPE: {
 			for (Transaction tmp : solicitadas) {
-				
-				
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date(tmp.getExecutionDate());
 				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + ";"
 						+ tmp.gettType().toString() + "]";
 				queryList.add(intermedio);
-				
+
 			}
 			break;
 		}
 		case USER_LIST: {
 			for (Transaction tmp : solicitadas) {
-			
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date(tmp.getExecutionDate());
 				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + "]";
@@ -354,22 +384,28 @@ public class ConectorController implements Serializable {
 		}
 		case SIMPLE: {
 			for (Transaction tmp : solicitadas) {
-				
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date(tmp.getExecutionDate());
 				String intermedio = "[" + tmp.getQueryExecuted() + ";" + dateFormat.format(date) + ";"
 						+ tmp.getUserTransaction() + "]";
 				queryList.add(intermedio);
-			
+
 			}
 			break;
 		}
 		}
-		
+
 		return queryList;
 	}
 
 	public ArrayList<String> getReport(String database, String user) {
+		// Funcion que devuelve un listado de las sentencias sql ejecutadas en la base
+		// de datos i por el usuario pasados como parametros
+
+		// Obtenemos el arraylist del evento que escucha, en nuestro caso es el [0] ya
+		// que solo tenemos uno, en caso de tener mas podriamos filtrar por el
+		// propertyName del que se lanza el evento
 		PropertyChangeListener[] temporal = evento.getPropertyChangeListeners();
 		QueryEvento transicion = (QueryEvento) temporal[0];
 
@@ -388,6 +424,9 @@ public class ConectorController implements Serializable {
 	}
 
 	public ArrayList<String> getReport(String database, String user, TransactionType tipo) {
+		// Funcion que devuelve un listado de las sentencias sql ejecutadas sobre la
+		// base de datos pasada como parametro por el usuario del parametro y ffiltrados
+		// por el tipo de sentencia
 		PropertyChangeListener[] temporal = evento.getPropertyChangeListeners();
 		QueryEvento transicion = (QueryEvento) temporal[0];
 
@@ -430,12 +469,14 @@ public class ConectorController implements Serializable {
 	}
 
 	public void printReport(String database, TransactionType tipo) {
+		// Imprime por pantalla el reporte solicitado. ver getReport(String
+		// database,TransactionType tipo)
 		ArrayList<String> reporte = new ArrayList<String>();
 		reporte = getReport(database, tipo);
-		
+
 		if (reporte != null) {
 			for (String a : reporte) {
-				System.out.println(a);	
+				System.out.println(a);
 			}
 		} else {
 			System.out.println("No se han encontrado registros");
@@ -443,6 +484,8 @@ public class ConectorController implements Serializable {
 	}
 
 	public void printReport(String database, String user, TransactionType tipo) {
+		// Imprime por pantalla el reporte solicitado. ver getReport(String
+		// database,String user,TransactionType tipo)
 		ArrayList<String> reporte = new ArrayList<String>();
 		reporte = getReport(database, user, tipo);
 		if (reporte != null) {
@@ -456,6 +499,8 @@ public class ConectorController implements Serializable {
 	}
 
 	public void printReport(String database, String user) {
+		// Imprime por pantalla el reporte solicitado. ver getReport(String
+		// database,String user)
 		ArrayList<String> reporte = new ArrayList<String>();
 		reporte = getReport(database, user);
 		if (reporte != null) {
