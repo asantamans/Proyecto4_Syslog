@@ -24,8 +24,10 @@ public class Pruebas2 {
 		a.ejecutarQuery("Select * from personaje");
 		System.out.println("SELECT * FROM USERS");
 		a.ejecutarQuery("SELECT * from users");
-		System.out.println("EXECUTE test2;");
-		a.ejecutarQuery("EXECUTE test2;");
+		
+		a.setCredentials("root","");
+		System.out.println("CALL test2;");
+		a.ejecutarQuery("CALL test2");
 
 		a.setCredentials("arnau", "");
 		System.out.println("SELECT * FROM FACCION");
@@ -33,31 +35,33 @@ public class Pruebas2 {
 		a.setDatabase("bv");
 		System.out.println("SELECT * FROM BFPLAYER");
 		a.ejecutarQuery("select * from bfplayer");
-
-		ArrayList<String> reporte = new ArrayList<String>();
+		
+		System.out.println("Realizamos un insert");
+		a.ejecutarQuery("INSERT INTO `bfplayer`(`user_id`, `class_id`, `primary_weapon`, `device1`, `kills`, `Deads`) VALUES ('ARNOLD',2,1,2,9,7)");
+		System.out.println("Ejecutamos update");
+		a.ejecutarQuery("UPDATE bfplayer SET user_id='ARNOLD_PRO' WHERE user_id='ARNOLD'");
+		System.out.println("Ejecutamos remove");
+		a.ejecutarQuery("delete from bfplayer where user_id = 'ARNOLD_PRO'");
+		
+		
 		System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con query select");
-		reporte = a.getReport("forhonor", TransactionType.SELECT);
-		printReport(reporte);
+		a.printReport("forhonor", TransactionType.SELECT);
 
+		
 		System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con usuario arnau");
-		reporte = a.getReport("forhonor", "arnau");
-		printReport(reporte);
+		a.printReport("forhonor", "arnau");
 
 		System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con usuario root");
-		reporte = a.getReport("forhonor", "root");
-		printReport(reporte);
+		a.printReport("forhonor", "root");
 
 		System.out.println("\n\n\n\nPrintado de reporte  de bbdd bv i usuario arnau");
-		reporte = a.getReport("bv", "arnau");
-		 printReport(reporte);
-		
+		a.printReport("bv", "arnau");
+
 		System.out.println("\n\n\n\nPrintado de reporte  de bbdd bv i usuario root");
-		reporte = a.getReport("bv", "root");
-		 printReport(reporte);
-		 
-		 System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con query procedure");
-			reporte = a.getReport("forhonor", "root");
-			printReport(reporte);
+		a.printReport("bv", "root");
+
+		System.out.println("\n\n\n\nPrintado de reporte de bbdd forhonor con query procedure");
+		a.printReport("forhonor",TransactionType.PROCEDURE);
 
 	}
 
@@ -66,7 +70,7 @@ public class Pruebas2 {
 			for (String a : reporte) {
 				System.out.println(reporte);
 			}
-		}else {
+		} else {
 			System.out.println("No se han encontrado registros");
 		}
 
