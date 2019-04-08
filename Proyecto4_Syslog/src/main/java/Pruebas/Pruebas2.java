@@ -20,6 +20,10 @@ public class Pruebas2 {
 		a.setHostSettings("localhost", "3306");
 		a.setCredentials("root", "");
 
+		//Para obtener los results de un select
+		ArrayList<String> tmp = a.getResultsSelect("SELECT * from users");
+		System.out.println("Numero de filas retornadas: "+tmp.size());
+		
 		System.out.println("SELECT * FROM PERSONAJE;");
 		a.ejecutarQuery("Select * from personaje");
 		System.out.println("SELECT * FROM USERS");

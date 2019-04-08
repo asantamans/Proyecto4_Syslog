@@ -99,6 +99,65 @@ public class ConectorController implements Serializable {
 		}
 	}
 
+	public ArrayList<String> getResultsSelect(String query) throws SQLException {
+		iniciarConexion();
+		/*
+		 * Funcion para transaciones sql de tipo select registros = numero de filas
+		 * devueltas; devuelve los registros en cadena de String con formato
+		 * registro1;registro2;registro3;.... registro1_2;registro2_2;registro3_2;....
+		 * registro1_3;registro2_3;registro3_3;....
+		 */
+		int registros = 0;
+		ArrayList<String> result = new ArrayList<String>();
+
+		try {
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(query);
+
+			ResultSetMetaData rsmd = rs.getMetaData();
+
+			int columnsNumber = rsmd.getColumnCount();
+
+			while (rs.next()) {
+				String intermedio = "";
+				++registros;
+				
+				for (int i = 1; i <= columnsNumber; i++) {
+					if (i > 1 && i < columnsNumber) {
+						String columnValue = rs.getString(i);
+						intermedio = intermedio + columnValue + ";";
+					} else if (i == columnsNumber) {
+						String columnValue = rs.getString(i);
+						intermedio = intermedio + columnValue;
+
+					} else {
+						String columnValue = rs.getString(i);
+						intermedio = intermedio + columnValue + ";";
+
+					}
+				}
+				result.add(intermedio);
+			}
+
+		} catch (SQLException e) {
+
+		} finally {
+			Date date = new Date();
+			Transaction transaction = new Transaction();
+			transaction.setUserTransaction(username);
+			transaction.setDatabaseUsed(database);
+			transaction.settType(TransactionType.SELECT);
+			transaction.setQueryExecuted(query);
+			transaction.setRegistros(registros);
+			transaction.setExecutionDate(date.getTime());
+			evento.firePropertyChange("SELECT", null, transaction);
+			cerrarConexion();
+			return result;
+		}
+
+	}
+
 	public void ejecutarQuery(String query) throws SQLException {
 		iniciarConexion();
 		this.sSQL = query;
